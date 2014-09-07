@@ -9,6 +9,7 @@
   "author": "",
   "private": true,
   "dependencies": {
+    "feedparser": "^0.19.2",
     "hiredis": "^0.1.17",
     "lodash": "^2.4.1",
     "request": "^2.42.0",

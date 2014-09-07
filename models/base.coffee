@@ -18,7 +18,18 @@ module.exports = class BaseModel
   @create: (args..., documents, cb) ->
     client.post @endpoints.collection(args...),
       (if _.isArray(documents) then {documents: documents} else documents),
-      cb
+      (err, reply) ->
+        return cb err if err?
+        if reply.ids
+          for id, i in reply.ids
+            if id
+              documents[i]._id = id
+            else
+              documents[i] = null
+          _.filter documents
+        else
+          documents._id = reply.id
+          documents
 
   constructor: (attributes) ->
     _.extend this, attributes

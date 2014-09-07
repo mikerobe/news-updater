@@ -8,7 +8,9 @@ module.exports = class Article extends BaseModel
     collection: (feedId) -> endpoints.articles(feedId)
     model: (feedId, id) -> endpoints.article(feedId, id)
 
-  saveText: (text, cb) ->
+  saveText: (cb) ->
+
+
     client.post @constructor.endpoints.model(@feedId,@_id),
       text: text,
       cb
