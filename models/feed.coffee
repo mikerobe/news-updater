@@ -8,7 +8,7 @@ request = require 'request'
 Article = require './article'
 
 feedParsersDir = path.resolve(__dirname__, '../feed-parsers')
-parsers = (require(path.resolve(feedParsersDir,file)) for file in fs.readdirSync(feedParsers).sort() when !/^\./.test file and fs.lstatSync(file).isFile())
+parsers = (require(path.resolve(feedParsersDir,file)) for file in fs.readdirSync(feedParsersDir).sort() when !/^\./.test file and fs.lstatSync(file).isFile())
 
 module.exports = class Feed extends BaseModel
   @endpoints =
@@ -34,7 +34,7 @@ module.exports = class Feed extends BaseModel
           return cb err if err?
 
           tasks = articles.map (article) ->
-            (done) -> article.saveText done
+            (done) -> article.saveText -> done
 
           async.parallel tasks, (err) ->
             feed.lastUpdated = new Date()
