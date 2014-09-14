@@ -9,10 +9,11 @@ module.exports = emitter = new EventEmitter
 emitter.on = (endpoint, fn) ->
   unless @listeners(endpoint).length
     socket.emit 'subscribe', endpoint
-  EventEmitter.prototype.emitter.apply(this, arguments)
+    socket.on endpoint, emitter.emit.bind(emitter, endpoint)
+  EventEmitter.prototype.on.apply(this, arguments)
 
 emitter.off = (endpoint, fn) ->
-  ret = EventEmitter.prototype.emitter.apply(this, arguments)
+  ret = EventEmitter.prototype.off.apply(this, arguments)
   unless @listeners(endpoint).length
     socket.emit 'unsubscribe', endpoint
   ret

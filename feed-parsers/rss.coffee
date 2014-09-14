@@ -10,7 +10,7 @@ module.exports =
     feedparser.end body
     feedparser.on 'error', (err) -> cb err
     feedparser.on 'readable', ->
-      articles = while article = @read
+      articles = while article = @read()
         article.url = article.origlink || article.link
         article
       cb null, articles

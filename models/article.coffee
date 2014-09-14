@@ -2,34 +2,27 @@ _ = require 'lodash'
 {get,post} = require '../services/rest-client'
 socket = require '../services/socket-client'
 {endpoints} = require '../config/server'
-throttledRequest = requrie '../services/throttled-request'
-htmlToText = require 'html-to-text'
+path = require 'path'
+fs = require 'fs'
+BaseModel = require './base'
 
-textFetchersDir = path.resolve(__dirname__, '../text-fetchers')
-textFetchers = (require(path.resolve(textFetchersDir,file)) for file in fs.readdirSync(textFetchersDir).sort() when !/^\./.test file and fs.lstatSync(file).isFile())
+textFetchersDir = path.resolve(__dirname, '../text-fetchers')
+textFetchers = (require(file) for file in fs.readdirSync(textFetchersDir).sort() when !/^\./.test file and fs.lstatSync(file = path.resolve(textFetchersDir,file)).isFile())
 
-defaultTextFetcher =
-  fetch: (url, cb) ->
-    throttledRequest url, (err, body) ->
-      return cb err if err?
-      htmlToText body, cb
+getTextFetcher = (url) ->
+  for textFetcher in textFetchers when textFetcher.handles @url
+    return @_textFetcher = textFetcher
 
 module.exports = class Article extends BaseModel
   @endpoints =
-    collection: (feedId) -> endpoints.articles(feedId)
-    model: (feedId, id) -> endpoints.article(feedId, id)
-
-  Object.setProperties @prototype,
-    textFetcher:
-      get: ->
-        return @_textFetcher if @_textFetcher
-        for textFetcher in textFetchers when textFetcher.handles @url
-          return @_textFetcher = textFetcher
-        return defaultTextFetcher
+    collection: endpoints.articles
+    model: endpoints.article
+    text: endpoints.articleText
 
   saveText: (cb) ->
-    @textFetcher.fetch @url, (err, text) =>
+    return cb new Error "Couldn't find text fetcher for [#{@url}]" unless textFetcher = getTextFetcher @url
+    textFetcher.fetch @url, (err, text) =>
       return cb err if err?
-      client.post @constructor.endpoints.model(@feedId,@_id),
+      post @constructor.endpoints.text(this),
         text: text,
         cb

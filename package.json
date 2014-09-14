@@ -9,11 +9,13 @@
   "author": "",
   "private": true,
   "dependencies": {
+    "async": "^0.9.0",
+    "debug": "^2.0.0",
     "feedparser": "^0.19.2",
     "hiredis": "^0.1.17",
     "lodash": "^2.4.1",
     "request": "^2.42.0",
-    "rest-client": "^0.1.5",
-    "socket.io-client": "^1.1.0"
+    "socket.io-client": "^1.1.0",
+    "tough-cookie": "^0.12.1"
   }
 }

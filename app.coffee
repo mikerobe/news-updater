@@ -1,7 +1,16 @@
-FeedList = require './services/feed-list'
+Feed = require './models/feed'
+debug = require('debug')('updater')
 
-feedList = new FeedList
-feedList.watch (newFeeds) ->
-  for feed in newFeeds
-    setInterval feed.updateArticles.bind(feed), feed.refreshMillis
+update = (feed) ->
+  feed.updateArticles (err) ->
+    if err?
+      debug "Error updating #{feed}:", err
+    setTimeout update.bind(feed), feed.refreshMillis
+    return
+  return
+
+debugger
+
+Feed.watch (newFeeds) ->
+  update feed for feed in newFeeds
   return
